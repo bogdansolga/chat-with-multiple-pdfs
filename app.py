@@ -8,11 +8,15 @@ from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain # allows us to chat with the vector store
+
 from langchain_community.chat_models import ChatOpenAI
+from langchain_community.llms.huggingface_hub import HuggingFaceHub
+
 from htmlTemplates import css, bot_template, user_template
+import os
 
 def initialize_Pinecone():
-  pc = Pinecone(api_key="c5b6d814-7712-49a6-8ab3-a352e8dd1a42")
+  pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
   pc.create_index(
       name="new-pdfs-dimension",
       dimension=1536,  # Replace with your model dimensions
@@ -68,7 +72,9 @@ def get_vector_store(text_chunks):
 
 
 def get_conversation_chain(vector_store):
-  llm = ChatOpenAI()
+  #llm = ChatOpenAI()
+  llm = HuggingFaceHub(repo_id='openai-community/gpt2-xl', model_kwargs={'temperature': 0.5, 'max_length': 500})
+
   memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
   conversation_chain = ConversationalRetrievalChain.from_llm(
       llm=llm,
