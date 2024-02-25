@@ -93,6 +93,7 @@ def handle_user_question(user_question):
       st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
     else:
       st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+
 def initialize_UI():
     st.set_page_config(page_title="Chat with many PDFs :books:", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
