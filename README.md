@@ -1,5 +1,5 @@
 1. Download latest Python: https://www.python.org/downloads/macos/
-2. Make Python2 default
+2. Make Python 3 the default
 ```
 vi ~/.bash_aliases
 add:
@@ -15,4 +15,7 @@ python -m venv /Volumes/NVMe/Development/IdeaProjects/AI/chat-with-pdfs/venv
 ```
 pip install -r requirements.txt
 ```
-5. 
+5. Run the project:
+```
+streamlit run app.py
+```
