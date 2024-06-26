@@ -9,7 +9,7 @@ source ~/.bash_aliases
 ```
 3. Generate the virtual environment (https://docs.python.org/3/library/venv.html) 
 ```
-python -m venv /Volumes/NVMe/Development/IdeaProjects/AI/chat-with-pdfs/venv
+python -m venv $(pwd)/venv
 ```
 4. Install dependencies:
 ```
