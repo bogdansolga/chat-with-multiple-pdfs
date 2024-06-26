@@ -29,7 +29,7 @@ css = '''
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="https://i.ibb.co/cN0nmSj/Screenshot-2023-05-28-at-02-37-21.png">
+        <img src="https://i.ibb.co/T1FdGD5/AI-small.png">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
@@ -38,7 +38,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://i.ibb.co/ZgWwgvJ/bogdan-solga-smaller.jpg">
+        <img src="https://i.ibb.co/jwrTbJT/bogdan-solga-smaller.jpg">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>

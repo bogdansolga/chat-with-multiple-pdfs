@@ -9,7 +9,7 @@ from langchain_pinecone import PineconeVectorStore
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain # allows us to chat with the vector store
 
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 from langchain_community.llms.huggingface_hub import HuggingFaceHub
 
 from htmlTemplates import css, bot_template, user_template
@@ -17,16 +17,20 @@ import os
 
 def initialize_Pinecone():
   pc = Pinecone(api_key=os.getenv('PINECONE_API_KEY'))
-  pc.create_index(
-      name="new-pdfs-dimension",
-      dimension=1536,  # Replace with your model dimensions
-      metric="euclidean",  # Replace with your model metric
-      spec=ServerlessSpec(
-          cloud="aws",
-          region="us-west-2"
-      )
-  )
-  print('Pinecone index \'new-pdfs-dimension\' initialized successfully!')
+  createPineconeIndex(pc)
+
+def createPineconeIndex(pc):
+    pineconeIndexName = os.getenv('PINECONE_INDEX_NAME')
+    pc.create_index(
+        name=pineconeIndexName,
+        dimension=1536,
+        metric="euclidean",
+        spec=ServerlessSpec(
+            cloud="aws",
+            region="us-west-2"
+        )
+    )
+    print('The Pinecone index \'' + pineconeIndexName + '\' was initialized successfully!')
 
 def main():
   load_dotenv()
@@ -58,7 +62,7 @@ def get_vector_store(text_chunks):
   embeddings = OpenAIEmbeddings()
   #print('OpenAIEmbeddings initialized')
 
-  index_name = "new-pdfs-dimension"
+  index_name = os.getenv('PINECONE_INDEX_NAME')#"new-pdfs-dimension"
 
   #print('text_chunks: ' + str(type(text_chunks)))
   vector_store = PineconeVectorStore.from_texts(text_chunks, embeddings, index_name=index_name)
@@ -72,8 +76,8 @@ def get_vector_store(text_chunks):
 
 
 def get_conversation_chain(vector_store):
-  #llm = ChatOpenAI()
-  llm = HuggingFaceHub(repo_id='openai-community/gpt2-xl', model_kwargs={'temperature': 0.5, 'max_length': 500})
+  llm = ChatOpenAI()
+  ##llm = HuggingFaceHub(repo_id='openai-community/gpt2-xl', model_kwargs={'temperature': 0.5, 'max_length': 500})
 
   memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
   conversation_chain = ConversationalRetrievalChain.from_llm(
@@ -84,6 +88,11 @@ def get_conversation_chain(vector_store):
   return conversation_chain
 
 def handle_user_question(user_question):
+  if "conversation_chain" not in st.session_state:
+      st.session_state.conversation_chain = {}
+
+  print('Handling the question \'' + user_question + '\' for ' + str(st.session_state.conversation_chain))
+
   response = st.session_state.conversation_chain({'question': user_question})
   # st.write(response) if we want to see the raw response
   st.session_state.chat_history = response['chat_history']
@@ -95,7 +104,7 @@ def handle_user_question(user_question):
       st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
 
 def initialize_UI():
-    st.set_page_config(page_title="Chat with many PDFs :books:", page_icon=":books:")
+    st.set_page_config(page_title="Chat with multiple PDFs :books:", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
 
     if "conversation_chain" not in st.session_state:
